@@ -91,7 +91,5 @@ def index():
     
     return render_template('index.html')
 
-# app.py (end of file)
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Use PORT from env, default to 5000 locally
-    app.run(host='0.0.0.0', port=port, debug=False)  # Bind to 0.0.0.0 for external access
+     app.run(debug=True)
