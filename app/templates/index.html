@@ -13,26 +13,14 @@
             --error-color: #e74c3c;
             --background-color: #ecf0f1;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             line-height: 1.6;
             background-color: var(--background-color);
             color: var(--primary-color);
         }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
         header {
             background-color: var(--primary-color);
             color: white;
@@ -41,30 +29,16 @@
             border-radius: 8px 8px 0 0;
             margin-bottom: 2rem;
         }
-
-        .upload-section {
+        .upload-section, .result-section {
             background: white;
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
         }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .file-upload-wrapper {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .file-upload-wrapper { position: relative; display: inline-block; width: 100%; }
         input[type="file"] {
             opacity: 0;
             width: 100%;
@@ -74,7 +48,6 @@
             left: 0;
             cursor: pointer;
         }
-
         .custom-file-button {
             display: inline-block;
             width: 100%;
@@ -88,18 +61,11 @@
             transition: all 0.3s ease;
             font-weight: 500;
         }
-
         .custom-file-button:hover {
             background-color: var(--primary-color);
             color: white;
         }
-
-        .file-name {
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
+        .file-name { margin-top: 0.5rem; font-size: 0.9rem; color: #666; }
         .btn {
             background-color: var(--secondary-color);
             color: white;
@@ -109,19 +75,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
-        .btn:hover {
-            background-color: #2980b9;
-        }
-
-        .result-section {
-            margin-top: 2rem;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
+        .btn:hover { background-color: #2980b9; }
         .error {
             color: var(--error-color);
             padding: 1rem;
@@ -129,58 +83,25 @@
             border-radius: 4px;
             margin-top: 1rem;
         }
-
-        .marks-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .marks-table th,
-        .marks-table td {
+        .marks-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .marks-table th, .marks-table td {
             padding: 0.8rem;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-
-        .marks-table th {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .total {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--success-color);
-        }
-
-        .preview-img {
-            max-width: 100%;
-            border-radius: 4px;
-            margin-top: 1rem;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        .processed-img {
+        .marks-table th { background-color: var(--primary-color); color: white; }
+        .total { font-size: 1.2rem; font-weight: bold; color: var(--success-color); }
+        .preview-img, .processed-img {
             max-width: 100%;
             border-radius: 4px;
             margin-top: 1rem;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
-        .image-preview {
-            margin-top: 1rem;
-        }
-
+        .preview-img { display: none; }
+        .image-preview { margin-top: 1rem; }
+        .mark-input { width: 60px; padding: 0.5rem; margin: 0.5rem 0; }
         @media (max-width: 600px) {
-            .container {
-                padding: 1rem;
-            }
-            .upload-section,
-            .result-section {
-                padding: 1rem;
-            }
+            .container, .upload-section, .result-section { padding: 1rem; }
         }
     </style>
 </head>
@@ -214,17 +135,28 @@
         {% if marks is defined %}
             <section class="result-section">
                 <h2>Results</h2>
-                <table class="marks-table">
-                    <tr>
-                        <th>Detected Marks</th>
-                    </tr>
-                    {% for mark in marks %}
-                        <tr>
-                            <td>{{ mark }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-                <p class="total">Total: {{ total }}</p>
+                {% if edit_mode %}
+                    <form method="POST" action="/">
+                        <table class="marks-table">
+                            <tr><th>Detected Marks (Editable)</th></tr>
+                            {% for mark in marks %}
+                                <tr>
+                                    <td><input type="number" name="marks" class="mark-input" value="{{ mark }}"></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <input type="hidden" name="processed_filename" value="{{ processed_filename }}">
+                        <button type="submit" class="btn">Confirm Marks</button>
+                    </form>
+                {% else %}
+                    <table class="marks-table">
+                        <tr><th>Final Marks</th></tr>
+                        {% for mark in marks %}
+                            <tr><td>{{ mark }}</td></tr>
+                        {% endfor %}
+                    </table>
+                    <p class="total">Total: {{ total }}</p>
+                {% endif %}
                 {% if processed_filename %}
                     <h3>Processed Image</h3>
                     <img src="{{ url_for('static', filename='uploads/' + processed_filename) }}" 
@@ -242,7 +174,6 @@
 
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            
             if (file) {
                 fileNameDisplay.textContent = file.name;
                 if (file.type.startsWith('image/')) {
